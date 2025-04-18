@@ -13,8 +13,6 @@ from prog_policies.base import BaseDSL
 
 OPENROUTER_KEY = os.getenv("OPENROUTER_API_KEY")
 
-# OPENROUTER_KEY = "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"
-
 class LLMProgramGeneratorLlama:
     def __init__(
         self,
