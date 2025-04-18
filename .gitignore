@@ -8,3 +8,5 @@ wandb
 *.gif
 *.pdf
 output
+venv/
+llm_gs_env/

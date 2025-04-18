@@ -7,7 +7,7 @@ from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 sys.path.append(".")
 sys.path.append("./leaps")
 
-from llm import LLMProgramGenerator
+from llm.llm_program_generator_llama import LLMProgramGeneratorLlama
 from prog_policies.utils import get_env_name
 from prog_policies.karel import KarelDSL
 from prog_policies.minigrid.dsl import MinigridDSL
@@ -26,31 +26,14 @@ def karel_env(args):
     dsl = KarelDSL()
 
     env_args = {
-        "env_height": 8,
-        "env_width": 8,
+        "env_height": 12,
+        "env_width": 12,
         "crashable": args.crashable,
         "leaps_behaviour": True,
         "max_calls": 10000,
     }
 
-    if (
-        args.task == "StairClimber"
-        or args.task == "StairClimberSparse"
-        or args.task == "TopOff"
-        or args.task == "FourCorners"
-    ):
-        env_args["env_height"] = 12
-        env_args["env_width"] = 12
-
-    if args.task == "CleanHouse":
-        env_args["env_height"] = 14
-        env_args["env_width"] = 22
-
-    if args.task == "WallAvoider":
-        env_args["env_height"] = 8
-        env_args["env_width"] = 5
-
-    task_cls = get_karel_task_cls(args.task)
+    task_cls = get_karel_task_cls("StairClimber")
     task_envs = [task_cls(env_args, i) for i in range(args.num_envs)]
     return task_envs, dsl
 
@@ -80,8 +63,6 @@ if __name__ == "__main__":
         help="Search method class name",
     )
     parser.add_argument("--seed", type=int, default=0, help="Random seed for searching")
-    
-    # num envs per task
     parser.add_argument(
         "--num_envs", type=int, default=32, help="Number of environments to search"
     )
@@ -89,7 +70,11 @@ if __name__ == "__main__":
     # Karel-Hard: DoorKey, OneStroke, Seeder, Snake
     # karel-New: PathFollow, WallAvoider
     # Minigrid: LavaGap, PutNear, RedBlueDoor
-    parser.add_argument("--task", default="DoorKey", help="Task class name")
+    parser.add_argument(
+        "--task",
+        default="StairClimber",
+        help="Task class name (only StairClimber is supported)",
+    )
     parser.add_argument(
         "--crashable",
         action="store_true",
@@ -198,11 +183,21 @@ if __name__ == "__main__":
     log["args"] = vars(args)
     log["seed"] = args.seed
 
-    llm_program_generator = LLMProgramGenerator(
+    llm_program_generator = LLMProgramGeneratorLlama(
         args.seed, args.task, dsl, args.llm_program_num, args.temperature, args.top_p
     )
     program_list, llm_log = llm_program_generator.get_program_list_python_to_dsl()
     log["llm_log"] = [llm_log]
+
+    # Save generated programs to a .txt file
+    output_file = os.path.join(output_dir_seed, "generated_programs.txt")
+    with open(output_file, 'w') as f:
+        f.write(f"Generated {len(program_list)} programs for task: {args.task}\n\n")
+        for i, program in enumerate(program_list):
+            f.write(f"Program {i+1}:\n")
+            f.write(dsl.parse_node_to_str(program))
+            f.write("\n\n")
+    print(f"Saved {len(program_list)} generated programs to {output_file}")
 
     init_time = time.time()
 
