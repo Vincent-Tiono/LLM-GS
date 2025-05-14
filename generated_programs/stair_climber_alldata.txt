@@ -1,0 +1,4 @@
+Generated 4 programs for task: StairClimberSparse
+
+Program 4:
+DEF run m( IFELSE c( frontIsClear c) i( IFELSE c( rightIsClear c) i( turnLeft turnLeft i) ELSE e( move turnLeft turnLeft turnRight e) i) ELSE e( move turnLeft turnLeft e) m)
