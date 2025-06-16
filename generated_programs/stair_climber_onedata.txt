@@ -1,0 +1,1 @@
+DEF run m( IF c( markersPresent c) i( turnRight i) IF c( rightIsClear c) m)

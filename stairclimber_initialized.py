@@ -51,7 +51,7 @@ if __name__ == "__main__":
 
     parser = ArgumentParser(formatter_class=ArgumentDefaultsHelpFormatter)
     
-    parser.add_argument("--search_program_file", type=str, default="generated_programs.txt")
+    parser.add_argument("--search_program_file", type=str, default="generated_programs/generated_programs.txt")
 
     # LatentSpace, ProgrammaticSpace, MinigridProgrammaticSpace
     parser.add_argument(
