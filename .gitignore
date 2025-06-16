@@ -10,3 +10,4 @@ wandb
 output
 venv/
 llm_gs_env/
+.DS_Store
